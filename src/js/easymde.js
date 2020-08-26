@@ -2463,7 +2463,7 @@ EasyMDE.prototype.createToolbar = function (items) {
                 var imageInput = document.createElement('input');
                 imageInput.className = 'imageInput';
                 imageInput.type = 'file';
-                imageInput.multiple = true;
+                imageInput.multiple = self.options.allowMultipleImageUpload == undefined ? true :  self.options.allowMultipleImageUpload;
                 imageInput.name = 'image';
                 imageInput.accept = self.options.imageAccept;
                 imageInput.style.display = 'none';
