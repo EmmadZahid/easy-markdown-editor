@@ -809,6 +809,20 @@ function drawUploadedImage(editor) {
 }
 
 /**
+ * Action for drawing an img.
+ */
+function drawCustomUploadedImage(editor) {
+    // var cm = editor.codemirror;
+    // var stat = getState(cm);
+    var options = editor.options;
+    // var url = 'https://';
+    if(options.customPromptURLFunction){
+        editor.drawCustomPromptURL('custom-upload-image', options.customPromptURLFunction);
+        return;
+    }
+}
+
+/**
  * Action executed after an image have been successfully imported on the server.
  * @param editor {EasyMDE} The EasyMDE object
  * @param url {string} The url of the uploaded image
@@ -1490,6 +1504,12 @@ var toolbarBuiltInButtons = {
     'upload-image': {
         name: 'upload-image',
         action: drawUploadedImage,
+        className: 'fa fa-image',
+        title: 'Import an image',
+    },
+    'custom-upload-image': {
+        name: 'custom-upload-image',
+        action: drawCustomUploadedImage,
         className: 'fa fa-image',
         title: 'Import an image',
     },
@@ -2664,6 +2684,7 @@ EasyMDE.cleanBlock = cleanBlock;
 EasyMDE.drawLink = drawLink;
 EasyMDE.drawImage = drawImage;
 EasyMDE.drawUploadedImage = drawUploadedImage;
+EasyMDE.drawCustomUploadedImage = drawCustomUploadedImage;
 EasyMDE.drawTable = drawTable;
 EasyMDE.drawHorizontalRule = drawHorizontalRule;
 EasyMDE.undo = undo;
@@ -2727,12 +2748,12 @@ EasyMDE.prototype.drawCustomPromptURL = function(urlType , customPromptURLFuncti
         var text = '';
         if(urlType == 'link'){
             text = options.insertTexts.fullUrlInfo;
-        } else if(urlType == 'image'){
+        } else if(urlType == 'image' || urlType == 'custom-upload-image'){
             text = options.insertTexts.fullImageInfo;
         }
         if(!urlName){
             // urlName = '';
-            if(urlType == 'image'){
+            if(urlType == 'image' || urlType == 'custom-upload-image'){
                 text = options.insertTexts.image;
             } else if(urlType == 'link'){
                 text = options.insertTexts.link;
@@ -2749,6 +2770,9 @@ EasyMDE.prototype.drawImage = function () {
 };
 EasyMDE.prototype.drawUploadedImage = function () {
     drawUploadedImage(this);
+};
+EasyMDE.prototype.drawCustomUploadedImage = function () {
+    drawCustomUploadedImage(this);
 };
 EasyMDE.prototype.drawTable = function () {
     drawTable(this);
