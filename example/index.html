@@ -13,7 +13,137 @@
 <body>
     <textarea></textarea>
     <script>
-        var easyMDE = new EasyMDE();
+        var easyMDE = new EasyMDE({
+            promptURLs: true,
+            imageUploadFunction: function(file, onSuccess, onError){
+                onSuccess("https://image.shutterstock.com/image-photo/white-transparent-leaf-on-mirror-260nw-577160911.jpg",null)
+            },
+            customPromptURLs: true,
+            customPromptURLFunction: function(urlType, onSuccess){
+                console.log(urlType)
+                onSuccess("car", "http://www.google.com")
+            },
+            toolbar : [
+            {
+                name: 'bold',
+                action: EasyMDE.toggleBold,
+                className: 'fa fa-bold',
+                title: 'Bold',
+                default: true,
+            },
+            {
+                name: 'italic',
+                action: EasyMDE.toggleItalic,
+                className: 'fa fa-italic',
+                title: 'Italic',
+                default: true,
+            },
+            {
+                name: 'strikethrough',
+                action: EasyMDE.toggleStrikethrough,
+                className: 'fa fa-strikethrough',
+                title: 'Strikethrough',
+            },
+            {
+                name: 'heading',
+                action: EasyMDE.toggleHeadingSmaller,
+                className: 'fa fa-header fa-heading',
+                title: 'Heading',
+                default: true,
+            },
+            {
+                name: 'quote',
+                action: EasyMDE.toggleBlockquote,
+                className: 'fa fa-quote-left',
+                title: 'Quote',
+                default: true,
+            },
+            {
+                name: 'unordered-list',
+                action: EasyMDE.toggleUnorderedList,
+                className: 'fa fa-list-ul',
+                title: 'Generic List',
+                default: true,
+            },
+            {
+                name: 'ordered-list',
+                action: EasyMDE.toggleOrderedList,
+                className: 'fa fa-list-ol',
+                title: 'Numbered List',
+                default: true,
+            },
+            '|',
+            {
+                name: 'link',
+                action: EasyMDE.drawLink,
+                className: 'fa fa-link',
+                title: 'Create Link',
+                default: true,
+            },
+            {
+                name: 'image',
+                action: EasyMDE.drawImage,
+                className: 'fa fa-image',
+                title: 'Insert Image',
+                default: true,
+            },
+            {
+                name: 'upload-image',
+                action: EasyMDE.drawUploadedImage,
+                className: 'fa fa-file-image-o',
+                title: 'Import an image',
+                default: true,
+            },
+            {
+                name: 'table',
+                action: EasyMDE.drawTable,
+                className: 'fa fa-table',
+                title: 'Insert Table',
+            },
+            {
+                name: 'horizontal-rule',
+                action: EasyMDE.drawHorizontalRule,
+                className: 'fa fa-minus',
+                title: 'Insert Horizontal Line',
+            },
+            '|',
+            {
+                name: 'preview',
+                action: EasyMDE.togglePreview,
+                className: 'fa fa-eye',
+                noDisable: true,
+                title: 'Toggle Preview',
+                default: true,
+            },
+            {
+                name: 'side-by-side',
+                action: EasyMDE.toggleSideBySide,
+                className: 'fa fa-columns',
+                noDisable: true,
+                noMobile: true,
+                title: 'Toggle Side by Side',
+                default: true,
+            },
+            {
+                name: 'fullscreen',
+                action: EasyMDE.toggleFullScreen,
+                className: 'fa fa-arrows-alt',
+                noDisable: true,
+                noMobile: true,
+                title: 'Toggle Fullscreen',
+                default: true,
+            },
+            '|',
+            {
+                name: 'guide',
+                action: 'https://www.markdownguide.org/basic-syntax/',
+                className: 'fa fa-question-circle',
+                noDisable: true,
+                title: 'Markdown Guide',
+                default: true,
+            }]
+        });
+        // easyMDE.drawUploadedImage()
     </script>
 </body>
 

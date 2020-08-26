@@ -765,6 +765,10 @@ function drawLink(editor) {
     var stat = getState(cm);
     var options = editor.options;
     var url = 'https://';
+    if(options.customPromptURLFunction){
+        editor.drawCustomPromptURL('link', options.customPromptURLFunction);
+        return;
+    }
     if (options.promptURLs) {
         url = prompt(options.promptTexts.link, 'https://');
         if (!url) {
@@ -782,6 +786,10 @@ function drawImage(editor) {
     var stat = getState(cm);
     var options = editor.options;
     var url = 'https://';
+    if(options.customPromptURLFunction){
+        editor.drawCustomPromptURL('image', options.customPromptURLFunction);
+        return;
+    }
     if (options.promptURLs) {
         url = prompt(options.promptTexts.image, 'https://');
         if (!url) {
@@ -805,12 +813,17 @@ function drawUploadedImage(editor) {
  * @param editor {EasyMDE} The EasyMDE object
  * @param url {string} The url of the uploaded image
  */
-function afterImageUploaded(editor, url) {
+function afterImageUploaded(editor, url, urlName) {
     var cm = editor.codemirror;
     var stat = getState(cm);
     var options = editor.options;
     var imageName = url.substr(url.lastIndexOf('/') + 1);
-    _replaceSelection(cm, stat.image, options.insertTexts.uploadedImage, url);
+    var text = options.insertTexts.uploadedImage;
+    if(urlName){
+        text = options.insertTexts.fullImageInfo;
+    }
+    
+    _replaceSelection(cm, stat.image, text, url, urlName);
     // show uploaded image filename for 1000ms
     editor.updateStatusBar('upload-image', editor.options.imageTexts.sbOnUploaded.replace('#image_name#', imageName));
     setTimeout(function () {
@@ -1018,7 +1031,7 @@ function togglePreview(editor) {
 
 }
 
-function _replaceSelection(cm, active, startEnd, url) {
+function _replaceSelection(cm, active, startEnd, url, urlName) {
     if (/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
         return;
 
@@ -1032,6 +1045,10 @@ function _replaceSelection(cm, active, startEnd, url) {
     if (url) {
         start = start.replace('#url#', url);  // url is in start for upload-image
         end = end.replace('#url#', url);
+
+        if(urlName){
+            start = start.replace('#urlName#', urlName);
+        }
     }
     if (active) {
         text = cm.getLine(startPoint.line);
@@ -1549,8 +1566,10 @@ var toolbarBuiltInButtons = {
 
 var insertTexts = {
     link: ['[', '](#url#)'],
+    fullUrlInfo: ['[#urlName#](#url#)',''],
     image: ['![](', '#url#)'],
     uploadedImage: ['![](#url#)', ''],
+    fullImageInfo: ['![#urlName#](#url#)',''],
     // uploadedImage: ['![](#url#)\n', ''], // TODO: New line insertion doesn't work here.
     table: ['', '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n\n'],
     horizontalRule: ['', '\n\n-----\n\n'],
@@ -2272,8 +2291,8 @@ EasyMDE.prototype.uploadImage = function (file, onSuccess, onError) {
  */
 EasyMDE.prototype.uploadImageUsingCustomFunction = function(imageUploadFunction, file) {
     var self = this;
-    function onSuccess(imageUrl) {
-        afterImageUploaded(self, imageUrl);
+    function onSuccess(imageUrl, imageName) {
+        afterImageUploaded(self, imageUrl, imageName);
     }
 
     function onError(errorMessage) {
@@ -2698,6 +2717,33 @@ EasyMDE.prototype.cleanBlock = function () {
 EasyMDE.prototype.drawLink = function () {
     drawLink(this);
 };
+
+EasyMDE.prototype.drawCustomPromptURL = function(urlType , customPromptURLFunctionCB){
+    var self = this;
+    function onSuccess(urlName, url){
+        var cm = self.codemirror;
+        var stat = getState(cm);
+        var options = self.options;
+        var text = '';
+        if(urlType == 'link'){
+            text = options.insertTexts.fullUrlInfo;
+        } else if(urlType == 'image'){
+            text = options.insertTexts.fullImageInfo;
+        }
+        if(!urlName){
+            // urlName = '';
+            if(urlType == 'image'){
+                text = options.insertTexts.image;
+            } else if(urlType == 'link'){
+                text = options.insertTexts.link;
+            }
+        }   
+        _replaceSelection(cm, stat.link, text, url, urlName);
+    }
+
+    customPromptURLFunctionCB.apply(this,[urlType, onSuccess]);
+};
+
 EasyMDE.prototype.drawImage = function () {
     drawImage(this);
 };
